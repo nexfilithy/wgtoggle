@@ -48,6 +48,9 @@ async fn main() -> Result<()> {
 
     let connection = Connection::system().await?;
     let proxy = NetworkManagerProxy::new(&connection).await?;
+    //check ssid once on startup before starting listening loop for network change
+    wireguard_toggle(&wireguard_vpn_name.clone(), &home_ssid).await;
+
     let mut signal_stream = proxy.receive_state_changed().await?;
     info!("📡 Listening for NetworkManager 'StateChanged' signals...");
     while let Some(signal) = signal_stream.next().await {
